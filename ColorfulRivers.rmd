@@ -1,0 +1,71 @@
+---
+title: "Colorful Rivers"
+author: "Evan Heisman"
+date: '2022-08-21'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+require(broman) # for crayola (TM) color set
+
+```
+
+## Defining colors
+
+First 
+```{r color-list}
+require(plyr)
+require(stringr)
+
+rgb2hex <- function(rgbColors){
+  r = rgbColors[1]
+  g = rgbColors[2]
+  b = rgbColors[3]
+  sprintf("#%02x%02x%02x", r, g, b)
+}
+
+allColors = ldply(colors(), function(color) { 
+    # TODO: remove duplicates "e.g. "grey5"
+    # if(color)
+    data.frame(color.name=color, color.hex=rgb2hex(col2rgb(color)[,1]))
+  })
+
+
+# TODO: add some fun "Crayola" colors to enrich the dataset
+#library(broman)
+#allColors = c(allColors, brocolors("crayons"))
+
+```
+
+
+```{r getNHD}
+require(nhdplusTools)
+
+columbiaSiteNumber = 14246900
+nasalleRiverSiteNumber = 12010000
+
+plot_nhdplus("12010000")
+
+
+flowline <- navigate_nldi(nwissite, 
+                          mode = "upstreamTributaries", 
+                          data_source = "flowlines")
+
+
+nhdplus <- subset_nhdplus(comids = as.integer(flowline$UT$nhdplus_comid),
+                          output_file = file.path(work_dir, "nhdplus.gpkg"),
+                          nhdplus_data = "download",
+                          overwrite = TRUE, return_data = FALSE)
+
+flowline <- read_sf(nhdplus, "NHDFlowline_Network")
+
+
+```
+
+```{r filterNHDbyColors}
+```
+
+```{r plotColorfulRivers}
+```
